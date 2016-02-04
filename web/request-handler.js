@@ -2,22 +2,19 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var fs = require('fs');
 var url = require('url');
-var addUrlToList = require('addUrlToList');
+//var $ = require('jQuery');
+// var addUrlToList = require('addUrlToList');
+// var isUrlInList = require('isUrlInList');
 // require more modules/folders here!
-
-
-
 
 exports.handleRequest = function (req, res) {
 
   var pathName = url.parse(req.url).pathname.split('/');
-  console.log(pathName);
 
   if(req.method === 'GET'){
 
     if (req.url === '/') {
       res.writeHead(200, {"Content-Type": "text/html"});
-      console.log('inside if');
       fs.readFile(archive.paths.index, 'utf8',  function (err, data) {
         res.end(data);
       });
@@ -26,7 +23,6 @@ exports.handleRequest = function (req, res) {
 
     else if (pathName[1].indexOf('www.') !== -1){
       res.writeHead(200, {"Content-Type": "text/html"});
-      console.log('inside else if');
       res.end(pathName[1]);
     }
 
@@ -34,6 +30,13 @@ exports.handleRequest = function (req, res) {
       res.writeHead(404);
       res.end('Got an error!!!!');
     }
+  }
+
+  if(req.method === 'POST'){
+    res.writeHead(302);
+    fs.writeFile(archive.paths.list, 'www.example.com\n', function(err, data) {
+      res.end('Found');
+    });
   }
 
 };
