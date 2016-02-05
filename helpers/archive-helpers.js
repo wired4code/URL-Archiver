@@ -49,9 +49,27 @@ exports.isUrlInList = function(url, callback){
   });
 };
 
-exports.addUrlToList = function(url){
-  fs.writeFile(exports.paths.list, url, 'utf8');
-};
+/*fs.writeFile(path, data, function(error) {
+     if (error) {
+       console.error("write error:  " + error.message);
+     } else {
+       console.log("Successful Write to " + path);
+     }
+});*/
+
+exports.addUrlToList = function(url, callback){
+     exports.isUrlInList(url, function(element){
+       if(callback(element)){
+         fs.appendFile(exports.paths.list, url, function(error){
+           if(error){
+               throw error;
+          }
+         });
+       }
+     });
+ };
+
+
 
 exports.isUrlArchived = function(){
 };
