@@ -18,12 +18,12 @@ exports.handleRequest = function (req, res) {
       fs.readFile(archive.paths.index, 'utf8',  function (err, data) {
         res.end(data);
       });
-
     }
 
     else if (pathName[1].indexOf('www.') !== -1){
       res.writeHead(200, {"Content-Type": "text/html"});
       res.end(pathName[1]);
+      archive.readListOfUrls();
     }
 
     else {
@@ -36,6 +36,7 @@ exports.handleRequest = function (req, res) {
     res.writeHead(302);
     fs.writeFile(archive.paths.list, 'www.example.com\n', function(err, data) {
       res.end('Found');
+      //archive.addUrlToList('www.example.com\n');
     });
   }
 
