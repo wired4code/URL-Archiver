@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var request = require('request');
 //var $ = require('jQuery');
 
 /*
@@ -26,10 +27,6 @@ exports.initialize = function(pathsObj){
 
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
-//
-// fs.readFile(archive.paths.index, 'utf8',  function (err, data) {
-/*        res.end(data);
-      });*/
 
 exports.readListOfUrls = function(callback){
   fs.readFile(exports.paths.list, function(err, sites) {
@@ -49,30 +46,37 @@ exports.isUrlInList = function(url, callback){
   });
 };
 
-/*fs.writeFile(path, data, function(error) {
-     if (error) {
-       console.error("write error:  " + error.message);
-     } else {
-       console.log("Successful Write to " + path);
-     }
-});*/
-
 exports.addUrlToList = function(url, callback){
-     exports.isUrlInList(url, function(element){
-       if(callback(element)){
-         fs.appendFile(exports.paths.list, url, function(error){
-           if(error){
-               throw error;
-          }
-         });
-       }
-     });
- };
-
-
-
-exports.isUrlArchived = function(){
+  exports.isUrlInList(url, function(sites){
+    if (callback(sites)){
+      fs.appendFile(exports.paths.list, url, function(error){
+        if(error){
+          throw error;
+        }
+      });
+    }
+  });
 };
 
-exports.downloadUrls = function(){
+exports.isUrlArchived = function(url, callback){
+  var exists = true;
+  fs.readFile(exports.paths.list + url, function(err) {
+    if (err) {
+      exists = false;
+    }
+    callback(exists);
+  });
+};
+
+exports.downloadUrls = function(urls){
+  _.each(urls, function(url) {
+    request('http://' + url, function(err, res, body) {
+      if(err) {
+        console.log('got an error');
+      } else {
+        fs.appendFile(exports.paths.archivedSites + '/' + url, body, function(err) {
+        });
+      }
+    });
+  });
 };
